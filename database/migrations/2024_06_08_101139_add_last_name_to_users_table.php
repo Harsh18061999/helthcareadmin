@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('name', 'first_name');
-            $table->string("last_name");
+            $table->renameColumn('name', 'first_name')->nullable();
+            $table->string("last_name")->nullable();
             $table->string("phone_numebr")->unique()->nullable();
             $table->longText("address")->nullable();
             $table->enum("login_type",['google','email'])->nullable();

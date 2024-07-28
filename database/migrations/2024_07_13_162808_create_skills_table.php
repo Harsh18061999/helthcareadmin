@@ -16,7 +16,7 @@ return new class extends Migration
             $table->longText("name")->nullable();
             $table->unsignedBigInteger('doctor_id')->nullable(); // Adding new column
 
-            $table->foreign('doctor_id')                   // Creating foreign key
+            $table->foreign('doctor_id') // Creating foreign key
                   ->references('id')
                   ->on('doctors')
                   ->onDelete('cascade');

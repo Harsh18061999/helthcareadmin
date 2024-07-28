@@ -22,7 +22,7 @@ class ServiceResource extends Resource
 {
     protected static ?string $model = Services::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
     public static function form(Form $form): Form
     {
@@ -31,11 +31,6 @@ class ServiceResource extends Resource
                 TextInput::make('name')
                 ->required()
                 ->label('Category Name'),
-                Select::make('parent_id')
-                    ->label('Parent Category')
-                    ->relationship('parent', 'name')
-                    ->searchable()
-                    ->nullable(),
             ]);
     }
 
@@ -43,15 +38,13 @@ class ServiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Category Name'),
-                Tables\Columns\TextColumn::make('parent.name')->label('Parent Category'),
+                Tables\Columns\TextColumn::make('name')->label('Service Name'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                ActionsViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -63,7 +56,7 @@ class ServiceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ChildrenRelationManager::class,
         ];
     }
 
@@ -73,7 +66,13 @@ class ServiceResource extends Resource
             'index' => Pages\ListServices::route('/'),
             'create' => Pages\CreateService::route('/create'),
             'edit' => Pages\EditService::route('/{record}/edit'),
-            'view' => Pages\ViewService::route('/{record}'),
         ];
+    }
+
+
+    // Override the query method to apply custom query constraints
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereNull('parent_id');
     }
 }
