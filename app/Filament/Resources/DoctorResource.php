@@ -33,82 +33,74 @@ class DoctorResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Group::make()
-                ->schema([
-                    Forms\Components\Section::make("Basic Info")
                     ->schema([
-                        TextInput::make('first_name')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                if ($operation !== 'create') {
-                                    return;
-                                }
-
-                                $set('slug', Str::slug($state));
-                            }),
-                        TextInput::make('middle_name')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                if ($operation !== 'create') {
-                                    return;
-                                }
-
-                                $set('slug', Str::slug($state));
-                            }),
-                        TextInput::make('last_name')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                if ($operation !== 'create') {
-                                    return;
-                                }
-
-                                $set('slug', Str::slug($state));
-                            }),
-
-                        TextInput::make('email')
-                            ->label('Email address')
-                            ->required()
-                            ->email()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true),
-
-                        TextInput::make('phone_number')
-                            ->maxLength(255),
-
-                        Forms\Components\DatePicker::make('date_of_birth')
-                            ->label('Date of birth')
-                            ->maxDate('today'),
-
-                        Textarea::make('address')->label('Address')->columnSpan('full'),
-                        Forms\Components\MarkdownEditor::make('about_my_self')
-                            ->columnSpan('full'),
-                    ])->columns(2)->collapsible(),
-
-                   
-                ])->columnSpan(2)->columns(3),
+                        Forms\Components\Section::make("Basic Info")
+                            ->schema([
+                                TextInput::make('first_name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                        if ($operation !== 'create') {
+                                            return;
+                                        }
+                                        $set('slug', Str::slug($state));
+                                    }),
+                                TextInput::make('middle_name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                        if ($operation !== 'create') {
+                                            return;
+                                        }
+                                        $set('slug', Str::slug($state));
+                                    }),
+                                TextInput::make('last_name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                        if ($operation !== 'create') {
+                                            return;
+                                        }
+                                        $set('slug', Str::slug($state));
+                                    }),
+                                TextInput::make('email')
+                                    ->label('Email address')
+                                    ->required()
+                                    ->email()
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true),
+                                TextInput::make('phone_number')
+                                    ->maxLength(255),
+                                Forms\Components\DatePicker::make('date_of_birth')
+                                    ->label('Date of birth')
+                                    ->maxDate('today'),
+                                Textarea::make('address')
+                                    ->label('Address')
+                                    ->columnSpan('full'),
+                                Forms\Components\MarkdownEditor::make('about_my_self')
+                                    ->columnSpan('full'),
+                            ])->columns(2)->collapsible(),
+                    ])->columnSpan(2)->columns(3),
                 Forms\Components\Group::make()
-                ->schema([
-                    Forms\Components\Section::make('Status')
-                        ->schema([
-                            Forms\Components\Toggle::make('status')
-                                ->label('Active')
-                                ->helperText("Manage the doctor status available or unavailable")
-                                ->default(true)
-                        ])->collapsible(),
+                    ->schema([
+                        Forms\Components\Section::make('Status')
+                            ->schema([
+                                Forms\Components\Toggle::make('status')
+                                    ->label('Active')
+                                    ->helperText("Manage the doctor status available or unavailable")
+                                    ->default(true),
+                            ])->collapsible(),
                         Forms\Components\Section::make('Profile Image')
-                        ->schema([
-                            SpatieMediaLibraryFileUpload::make('profile_image')
-                                ->collection('profile_image')
-                                ->responsiveImages()
-                                ->hiddenLabel(),
-                        ])
-                        ->collapsible(),
-                ])
+                            ->schema([
+                                SpatieMediaLibraryFileUpload::make('profile_image')
+                                    ->collection('profile_image')
+                                    ->responsiveImages()
+                                    ->hiddenLabel(),
+                            ])->collapsible(),
+                    ])
             ])->columns(3);
     }
 
@@ -119,20 +111,29 @@ class DoctorResource extends Resource
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('profile_image')
                     ->label('Image')
                     ->collection('profile_image'),
-                TextColumn::make('full_name')->getStateUsing(function (Model $record): string {
-                    return $record->first_name . " " . $record->last_name;
-                })->sortable(['first_name', 'last_name'])
+                TextColumn::make('full_name')
+                    ->getStateUsing(function (Model $record): string {
+                        return $record->first_name . " " . $record->last_name;
+                    })
+                    ->sortable(['first_name', 'last_name'])
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->where('first_name', 'like', "%{$search}%")
                             ->orWhere('last_name', 'like', "%{$search}%");
                     }),
-                TextColumn::make("email")->sortable("email")->searchable('email'),
-                TextColumn::make("phone_number")->sortable("phone_number")->searchable('phone_number'),
-                TextColumn::make("status")->badge()
+                TextColumn::make("email")
+                    ->sortable("email")
+                    ->searchable('email'),
+                TextColumn::make("phone_number")
+                    ->sortable("phone_number")
+                    ->searchable('phone_number'),
+                TextColumn::make("status")
+                    ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
                         'in-active' => 'danger',
-                    })->sortable("status")->searchable('status'),
+                    })
+                    ->sortable("status")
+                    ->searchable('status'),
             ])
             ->filters([
                 //
